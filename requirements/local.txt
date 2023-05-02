@@ -1,0 +1,14 @@
+asgiref
+Django
+django-model-utils
+html5lib
+Pillow
+psycopg2
+PyPDF2
+pytz
+reportlab
+six
+sqlparse
+Unipath
+webencodings
+xhtml2pdf

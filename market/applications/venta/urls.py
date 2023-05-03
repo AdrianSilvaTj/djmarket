@@ -50,4 +50,9 @@ urlpatterns = [
         views.SaleDeleteView.as_view(),
         name='venta-delete',
     ),
+    path(
+        'venta/anulate/<pk>/', 
+        views.SaleAnulateView.as_view(),
+        name='venta_anulate',
+    ),
 ]

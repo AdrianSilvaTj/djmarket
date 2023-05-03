@@ -6,7 +6,7 @@ from django.views.generic import (
     View,
     UpdateView,
     DeleteView,
-    DeleteView,
+    DetailView,
     ListView
 )
 from django.views.generic.edit import (
@@ -36,8 +36,11 @@ class AddCarView(VentasPermisoMixin, FormView):
         return context
     
     def form_valid(self, form):
+        """ Verifica la información del formulario """
+        # Toma los valores procedentes del form
         barcode = form.cleaned_data['barcode']
         count = form.cleaned_data['count']
+        # Si el producto ya se agrego se le suma la cantidad, sino se agrega como nuevo en la venta
         obj, created = CarShop.objects.get_or_create(
             barcode=barcode,
             defaults={
@@ -70,6 +73,7 @@ class CarShopUpdateView(VentasPermisoMixin, View):
 
 
 class CarShopDeleteView(VentasPermisoMixin, DeleteView):
+    """ Limpiar todo del carrito """
     model = CarShop
     success_url = reverse_lazy('venta_app:venta-index')
 
@@ -88,7 +92,7 @@ class CarShopDeleteAll(VentasPermisoMixin, View):
 
 
 class ProcesoVentaSimpleView(VentasPermisoMixin, View):
-    """ Procesa una venta simple """
+    """ Procesa una venta simple, SIN IMPRIMIR, SIN COMPROBANTE DE PAGO """
 
     def post(self, request, *args, **kwargs):
         #
@@ -155,23 +159,23 @@ class SaleListView(VentasPermisoMixin, ListView):
 
     def get_queryset(self):
         return Sale.objects.ventas_no_cerradas()
-
-
-
-class SaleDeleteView(VentasPermisoMixin, DeleteView):
-    template_name = "venta/delete.html"
-    model = Sale
-    success_url = reverse_lazy('venta_app:venta-index')
-
-    def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.anulate = True
-        self.object.save()
-        # actualizmos sl stok y ventas
-        SaleDetail.objects.restablecer_stok_num_ventas(self.object.id)
-        success_url = self.get_success_url()
-
-        return HttpResponseRedirect(success_url)
-
     
+class SaleDeleteView(VentasPermisoMixin, DetailView):
+    template_name = 'venta/delete.html'
+    model = Sale
 
+class SaleAnulateView(VentasPermisoMixin, View):
+    """ Anula la venta, pero no la elimina de la BD. Devuelve los productos al stock y
+    descuenta del numero de venta de los productos """
+    def post(self, request, *args, **kwargs):
+        sale = Sale.objects.get(id = self.kwargs['pk'])
+        # No se elimina realmente de la base de datos, solo se coloca como anulado. Por temas de auditoria
+        sale.anulate = True
+        sale.save()
+        # actualizmos sl stok y ventas
+        SaleDetail.objects.restablecer_stok_num_ventas(sale.id)
+        return HttpResponseRedirect(
+            reverse(
+                'venta_app:venta-list'
+            )
+        )

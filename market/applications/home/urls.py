@@ -29,5 +29,5 @@ urlpatterns = [
         'panel/admin-resumen-ventas/', 
         views.ReporteResumenVentas.as_view(),
         name='admin-resumen_ventas',
-    ),
+    ),    
 ]

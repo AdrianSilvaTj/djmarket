@@ -24,7 +24,8 @@ class PanelAdminView(AdminPermisoMixin, TemplateView):
         context["total_ventas"] = Sale.objects.total_ventas_dia()
         context["total_anulaciones"] = Sale.objects.total_ventas_anuladas_dia()
         context["stok_cero"] = Product.objects.productos_en_cero().count()
-        context["resumen_semana"] = SaleDetail.objects.resumen_ventas()[:7]
+        context["resumen_semana"] = SaleDetail.objects.resumen_ventas_semana()[:7]
+        context["resumen_ultimas"] = SaleDetail.objects.resumen_ventas()[:20]
         return context
     
 

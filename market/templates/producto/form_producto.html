@@ -100,7 +100,7 @@
     <div class="cell medium-6">
       <button type="submit" class="success button" style="width: 200px;">Guardar</button>
       {% if product %}
-      <a href="{% url 'producto_app:producto-delete' product.id %}" class="alert button clear">Eliminar</a>
+        <a href="{% url 'producto_app:producto-delete' product.id %}" class="alert button clear">Eliminar</a>
       {% endif %}
     </div>
   </form>

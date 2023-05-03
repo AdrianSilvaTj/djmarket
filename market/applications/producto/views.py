@@ -1,6 +1,6 @@
 # Django
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -65,6 +65,7 @@ class ProductDetailView(AlmacenPermisoMixin, DetailView):
 
 
 class ProductDetailViewPdf(AlmacenPermisoMixin, View):
+    """ Vista que genera un reporte en pdf. Recurso: https://www.youtube.com/watch?v=N9iQm4N3H8s """
     
     def get(self, request, *args, **kwargs):
         producto = Product.objects.get(id=self.kwargs['pk'])
@@ -77,6 +78,8 @@ class ProductDetailViewPdf(AlmacenPermisoMixin, View):
 
 
 class FiltrosProductListView(AlmacenPermisoMixin, ListView):
+    """ Filtra la lista de productos por: nombre, fecha de vencimiento, proveedor, marca y los ordena
+    por: nombre, cantidad, stock """
     template_name = "producto/filtros.html"
     context_object_name = 'productos'
 
@@ -93,6 +96,15 @@ class FiltrosProductListView(AlmacenPermisoMixin, ListView):
         return queryset
     
 
-
+class Prueba(View):
+    
+    def get(self, request, *args, **kwargs):
+        productos = Product.objects.all()
+        data = {
+            'productos': list(productos.values())
+        }
+        print (data)
+        return JsonResponse(data)
+        #return HttpResponse(reverse_lazy('home_app:index'))
     
 

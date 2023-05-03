@@ -4,6 +4,7 @@ from .models import Sale
 
 
 class VentaForm(forms.Form):
+    """ Formulario para el proceso de venta. """
     barcode = forms.CharField(
         required=True,
         widget=forms.TextInput(
@@ -24,6 +25,7 @@ class VentaForm(forms.Form):
     )
     #
     def clean_count(self):
+        """ Valida que la cantidad del producto en la venta sea mayor a 0 """
         count = self.cleaned_data['count']
         if count < 1:
             raise forms.ValidationError('Ingrese una cantidad mayor a cero')

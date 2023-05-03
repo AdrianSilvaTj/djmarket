@@ -44,6 +44,29 @@
       </table>
     </div>
   </div>
+  <div class="cell">
+    <h4 class="cell">Informe de Últimas Ventas:</h4>
+    <div class="cell">
+      <table class="hover">
+        <thead>
+          <th>Fecha</th>
+          <th>Numero Ventas</th>
+          <th>Total Vendido</th>
+          <th>Total Ganancias</th>
+        </thead>
+        <tbody>
+          {% for venta in resumen_ultimas %}
+            <tr>
+              <td>{{ venta.sale__date_sale__date }}</td>
+              <td>{{ venta.num_ventas }}</td>
+              <td>{{ venta.total_vendido }}</td>
+              <td>{{ venta.total_ganancias }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 {% endblock panel-content %}

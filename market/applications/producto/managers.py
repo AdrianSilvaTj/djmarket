@@ -43,7 +43,7 @@ class ProductManager(models.Manager):
     def filtrar(self, **filters):
         if not filters['date_start']:
             filters['date_start'] = '2020-01-01'
-        
+        # verifica si no han pasado por parametro la fecha final del filtro para la fecha de vencimiento
         if not filters['date_end']:
             filters['date_end'] = timezone.now().date() + timedelta(1080)
         #

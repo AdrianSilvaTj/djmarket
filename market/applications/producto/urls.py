@@ -40,4 +40,9 @@ urlpatterns = [
         views.FiltrosProductListView.as_view(),
         name='producto-filtros',
     ),
+    path(
+        'prueba/', 
+        views.Prueba.as_view(),
+        name='prueba',
+    ),
 ]

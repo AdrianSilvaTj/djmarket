@@ -5,9 +5,15 @@
 {% block panel-content %}
 
 <div class="grid-x grid-margin-x align-center">
-  <h5 class="cell" style="margin-bottom: 1em; text-align: center;">¿Desea eliminar esta Venta?</h5>  
+  <div id="mensaje" class="cell large-4 callout success " data-closable="slide-out-right" style="border-radius: 10px;border: 0px;">
+    <h5>Venta Anulada.</h5>
+      <button id="boton" class="close-button" aria-label="Dismiss alert" type="button" data-close>
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <h5 class="cell" style="margin-bottom: 1em; text-align: center;">¿Desea anular esta Venta?</h5>  
   <form class="cell medium-9 grid-x grid-margin-x align-center" 
-    action="{% url 'venta_app:venta-delete' sale.id %}" method="POST">
+    action="{% url 'venta_app:venta_anulate' sale.id %}" method="POST">
     {% csrf_token %}
     
     <div class="cell medium-7">
@@ -26,10 +32,19 @@
     </div>
     
     <div class="cell medium-6">
-      <button type="submit" class="alert button">Eliminar</button>
+      <button type="submit" class="alert button">Anular</button>
       <a href="{% url 'venta_app:venta-index' %}" class="primary button clear">Cancelar</a>
     </div>
   </form>
+  
 </div>
+
+<script>
+  const ventMensaje = document.getElementById('mensaje')
+  setTimeout(function() {
+    ventMensaje.remove();           
+  },2000);
+</script>
+
 
 {% endblock panel-content %}

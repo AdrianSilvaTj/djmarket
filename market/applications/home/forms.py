@@ -5,6 +5,7 @@ from applications.producto.models import Provider
 
 class LiquidacionProviderForm(forms.Form):
 
+    #Se le agrega la lista de proveedores
     provider = forms.ModelChoiceField(
         required=True,
         queryset=Provider.objects.all(),

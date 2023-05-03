@@ -51,6 +51,7 @@ class SaleManager(models.Manager):
         total = consulta.aggregate(
             total=Sum('amount')
         )['total']
+        # cerrados, es el nro de actualizaciones hechas, esto lo devuelve el ".update"
         cerrados = consulta.update(close=True) # devuelve numero de actualizciones
 
         return cerrados, total
@@ -95,7 +96,7 @@ class SaleDetailManager(models.Manager):
     def restablecer_stok_num_ventas(self, id_venta):
         prods_en_anulados = []
         for venta_detail in self.filter(sale__id=id_venta):
-            #actualizmso producot
+            #actualizamos productos, cantidad y numero de ventas
             venta_detail.product.count = venta_detail.product.count + venta_detail.count
             venta_detail.product.num_sale = venta_detail.product.num_sale - venta_detail.count
             prods_en_anulados.append(venta_detail.product)
@@ -116,7 +117,27 @@ class SaleDetailManager(models.Manager):
                 output_field=FloatField()
             ),
             num_ventas=Sum('count'),
-        )
+        ).order_by('-sale__date_sale')
+    
+    def resumen_ventas_semana(self):
+        # creamos rango de fecha
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=7)
+        return self.filter(
+            sale__anulate=False,
+            sale__close=True,
+            sale__date_sale__date__range=(start_date, end_date)
+        ).values('sale__date_sale__date').annotate(
+            total_vendido=Sum(
+                F('price_sale')*F('count'),
+                output_field=FloatField()
+            ),
+            total_ganancias=Sum(
+                F('price_sale')*F('count') - F('price_purchase')*F('count'),
+                output_field=FloatField()
+            ),
+            num_ventas=Sum('count'),
+        ).order_by('-sale__date_sale')
     
     def resumen_ventas_mes(self):
         #
@@ -129,7 +150,7 @@ class SaleDetailManager(models.Manager):
                 F('price_sale')*F('count') - F('price_purchase')*F('count'),
                 output_field=FloatField()
             )
-        ).order_by('-sale__date_sale__date__month')
+        ).order_by('-sale__date_sale__date__year','-sale__date_sale__date__month')
     
     def resumen_ventas_proveedor(self, **filters):
         # recibe 3 parametros en un diccionario
@@ -170,7 +191,8 @@ class CarShopManager(models.Manager):
     """ procedimiento modelo Carrito de compras """
     
     def total_cobrar(self):
-        
+        """ Va sumando los totales de cada producto (cantidad * precio) y retorna
+        el total de lo que hay en el carrito de compra """
         consulta = self.aggregate(
             total=Sum(
                 F('count')*F('product__sale_price'),
